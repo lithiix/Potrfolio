@@ -40,7 +40,7 @@ const Hero = () => {
                             transition={{ delay: 0.4 }}
                             className="text-xl text-gray-400 font-mono"
                         >
-                            Full Stack Developer | IoT Enthusiast | Tech Innovator
+                            Full Stack Developer | Flutter Developer | Tech Innovator
                         </motion.p>
 
                         <motion.p
@@ -49,7 +49,7 @@ const Hero = () => {
                             transition={{ delay: 0.5 }}
                             className="text-gray-300 text-lg leading-relaxed"
                         >
-                            Crafting innovative solutions at the intersection of web development and IoT.
+                            Crafting innovative solutions at the intersection of web development and Flutter.
                             Passionate about building scalable applications that make a difference.
                         </motion.p>
 
@@ -76,7 +76,7 @@ const Hero = () => {
                         >
                             <motion.a
                                 whileHover={{ scale: 1.2, rotate: 5 }}
-                                href="https://github.com"
+                                href="https://github.com/lithiix"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-3 glass-card hover:glow-border transition-all duration-300"
@@ -85,7 +85,7 @@ const Hero = () => {
                             </motion.a>
                             <motion.a
                                 whileHover={{ scale: 1.2, rotate: 5 }}
-                                href="https://linkedin.com"
+                                href="https://www.linkedin.com/in/lithira-ransika-43b237194"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-3 glass-card hover:glow-border transition-all duration-300"
@@ -94,7 +94,7 @@ const Hero = () => {
                             </motion.a>
                             <motion.a
                                 whileHover={{ scale: 1.2, rotate: 5 }}
-                                href="mailto:contact@example.com"
+                                href="mailto:lithiraransika12@gmail.com"
                                 className="p-3 glass-card hover:glow-border transition-all duration-300"
                             >
                                 <Mail className="text-primary" size={24} />
@@ -169,24 +169,6 @@ const Hero = () => {
                         <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-accent-purple/20 rounded-full blur-3xl"></div>
                     </motion.div>
                 </div>
-
-                {/* Scroll Indicator */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-                >
-                    <motion.a
-                        href="#about"
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="flex flex-col items-center gap-2 text-gray-400 hover:text-primary transition-colors"
-                    >
-                        <span className="text-sm font-mono">Scroll Down</span>
-                        <ChevronDown size={24} />
-                    </motion.a>
-                </motion.div>
             </div>
         </section>
     );

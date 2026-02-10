@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, X } from 'lucide-react';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -28,14 +28,14 @@ const Contact = () => {
         {
             icon: <Mail className="w-6 h-6" />,
             title: 'Email',
-            value: 'lithira@example.com',
-            link: 'mailto:lithira@example.com',
+            value: 'lithiraransika12@gmail.com',
+            link: 'mailto:lithiraransika12@gmail.com',
         },
         {
             icon: <Phone className="w-6 h-6" />,
             title: 'Phone',
-            value: '+94 XX XXX XXXX',
-            link: 'tel:+94XXXXXXXXX',
+            value: '+94 71 854 6453',
+            link: 'tel:+94718546453',
         },
         {
             icon: <MapPin className="w-6 h-6" />,
@@ -46,9 +46,9 @@ const Contact = () => {
     ];
 
     const socialLinks = [
-        { icon: <Github size={24} />, link: 'https://github.com', label: 'GitHub' },
-        { icon: <Linkedin size={24} />, link: 'https://linkedin.com', label: 'LinkedIn' },
-        { icon: <Twitter size={24} />, link: 'https://twitter.com', label: 'Twitter' },
+        { icon: <Github size={24} />, link: 'https://github.com/lithiix', label: 'GitHub' },
+        { icon: <Linkedin size={24} />, link: 'https://linkedin.com/in/lithira-ransika-43b237194', label: 'LinkedIn' },
+        { icon: <X size={24} />, link: 'https://x.com/LithiraRansika', label: 'X' },
     ];
 
     return (

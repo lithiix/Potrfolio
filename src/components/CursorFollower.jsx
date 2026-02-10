@@ -3,23 +3,35 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CursorFollower = () => {
     const [isHovering, setIsHovering] = useState(false);
-    const [cursorVariant, setCursorVariant] = useState('default');
-    const cursorRef = useRef(null);
+    const [trail, setTrail] = useState([]);
+    const trailIdRef = useRef(0);
 
-    // Motion values for smooth cursor movement
     const cursorX = useMotionValue(0);
     const cursorY = useMotionValue(0);
 
-    // Spring configuration for smooth trailing
-    const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
-    const cursorXSpring = useSpring(cursorX, springConfig);
-    const cursorYSpring = useSpring(cursorY, springConfig);
-
     useEffect(() => {
-        const moveCursor = (e) => {
-            const target = e.target;
+        let lastTime = Date.now();
 
-            // Check if hovering over interactive elements
+        const moveCursor = (e) => {
+            const currentTime = Date.now();
+
+            cursorX.set(e.clientX);
+            cursorY.set(e.clientY);
+
+            // Create trail effect
+            if (currentTime - lastTime > 30) {
+                const newTrail = {
+                    id: trailIdRef.current++,
+                    x: e.clientX,
+                    y: e.clientY,
+                };
+
+                setTrail(prev => [...prev.slice(-8), newTrail]);
+                lastTime = currentTime;
+            }
+
+            // Check for interactive elements
+            const target = e.target;
             const isInteractive =
                 target.tagName === 'A' ||
                 target.tagName === 'BUTTON' ||
@@ -29,149 +41,194 @@ const CursorFollower = () => {
                 target.classList.contains('btn-primary') ||
                 target.classList.contains('btn-outline');
 
-            if (isInteractive) {
-                // Magnetic effect - pull cursor towards element center
-                const rect = target.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-
-                // Calculate distance from cursor to center
-                const distanceX = centerX - e.clientX;
-                const distanceY = centerY - e.clientY;
-                const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-                // Apply magnetic pull if within range
-                if (distance < 100) {
-                    const pullStrength = 0.3;
-                    cursorX.set(e.clientX + distanceX * pullStrength);
-                    cursorY.set(e.clientY + distanceY * pullStrength);
-                } else {
-                    cursorX.set(e.clientX);
-                    cursorY.set(e.clientY);
-                }
-
-                setIsHovering(true);
-                setCursorVariant('hover');
-            } else {
-                cursorX.set(e.clientX);
-                cursorY.set(e.clientY);
-                setIsHovering(false);
-                setCursorVariant('default');
-            }
-        };
-
-        const handleMouseDown = () => {
-            setCursorVariant('click');
-        };
-
-        const handleMouseUp = () => {
-            setCursorVariant(isHovering ? 'hover' : 'default');
+            setIsHovering(isInteractive);
         };
 
         window.addEventListener('mousemove', moveCursor);
-        window.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
 
         return () => {
             window.removeEventListener('mousemove', moveCursor);
-            window.removeEventListener('mousedown', handleMouseDown);
-            window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [cursorX, cursorY, isHovering]);
-
-    const variants = {
-        default: {
-            scale: 1,
-            backgroundColor: 'rgba(0, 217, 255, 0.8)',
-            border: '2px solid rgba(0, 217, 255, 0.4)',
-        },
-        hover: {
-            scale: 1.5,
-            backgroundColor: 'rgba(0, 217, 255, 0.2)',
-            border: '2px solid rgba(0, 217, 255, 1)',
-        },
-        click: {
-            scale: 0.8,
-            backgroundColor: 'rgba(0, 217, 255, 1)',
-            border: '2px solid rgba(0, 217, 255, 1)',
-        },
-    };
+    }, [cursorX, cursorY]);
 
     return (
         <>
-            {/* Main cursor */}
-            <motion.div
-                ref={cursorRef}
-                className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-screen"
-                style={{
-                    x: cursorXSpring,
-                    y: cursorYSpring,
-                    translateX: '-50%',
-                    translateY: '-50%',
-                }}
-            >
+            {/* Trail particles */}
+            {trail.map((point, index) => (
                 <motion.div
-                    className="w-8 h-8 rounded-full"
-                    variants={variants}
-                    animate={cursorVariant}
+                    key={point.id}
+                    className="fixed top-0 left-0 pointer-events-none z-[9997]"
+                    initial={{
+                        x: point.x,
+                        y: point.y,
+                        scale: 1,
+                        opacity: 0.6,
+                    }}
+                    animate={{
+                        scale: 0,
+                        opacity: 0,
+                    }}
                     transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 28,
+                        duration: 0.6,
+                        ease: 'easeOut',
                     }}
                     style={{
-                        boxShadow: '0 0 20px rgba(0, 217, 255, 0.6)',
+                        translateX: '-50%',
+                        translateY: '-50%',
                     }}
-                />
-            </motion.div>
+                >
+                    <div
+                        className="w-2 h-2"
+                        style={{
+                            background: `linear-gradient(135deg, #00D9FF, #9D00FF)`,
+                            boxShadow: `0 0 ${8 - index}px rgba(0, 217, 255, ${0.8 - index * 0.1})`,
+                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                        }}
+                    />
+                </motion.div>
+            ))}
 
-            {/* Cursor dot */}
+            {/* Main cursor - Hexagon */}
             <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[10000]"
+                className="fixed top-0 left-0 pointer-events-none z-[9999]"
                 style={{
-                    x: cursorXSpring,
-                    y: cursorYSpring,
+                    x: cursorX,
+                    y: cursorY,
                     translateX: '-50%',
                     translateY: '-50%',
                 }}
             >
                 <motion.div
-                    className="w-1 h-1 bg-white rounded-full"
                     animate={{
-                        scale: cursorVariant === 'click' ? 0 : 1,
+                        scale: isHovering ? 1.5 : 1,
+                        rotate: isHovering ? 180 : 0,
                     }}
-                    style={{
-                        boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
+                    transition={{
+                        duration: 0.3,
+                        ease: 'easeOut',
                     }}
-                />
+                    className="relative"
+                >
+                    {/* Outer hexagon */}
+                    <div
+                        className="w-8 h-8"
+                        style={{
+                            background: 'transparent',
+                            border: '2px solid #00D9FF',
+                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                            boxShadow: '0 0 20px rgba(0, 217, 255, 0.8), inset 0 0 10px rgba(0, 217, 255, 0.4)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                        }}
+                    />
+
+                    {/* Center dot */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-1 h-1 bg-white rounded-full"
+                        style={{
+                            transform: 'translate(-50%, -50%)',
+                            boxShadow: '0 0 8px rgba(255, 255, 255, 1)',
+                        }}
+                    />
+
+                    {/* Corner accents */}
+                    <div
+                        className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-primary"
+                        style={{
+                            opacity: isHovering ? 1 : 0,
+                            transition: 'opacity 0.3s',
+                        }}
+                    />
+                    <div
+                        className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-secondary"
+                        style={{
+                            opacity: isHovering ? 1 : 0,
+                            transition: 'opacity 0.3s',
+                        }}
+                    />
+                </motion.div>
             </motion.div>
 
-            {/* Trailing particles */}
+            {/* Outer ring with glitch effect */}
             <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[9998] mix-blend-screen"
+                className="fixed top-0 left-0 pointer-events-none z-[9998]"
                 style={{
-                    x: cursorXSpring,
-                    y: cursorYSpring,
+                    x: cursorX,
+                    y: cursorY,
                     translateX: '-50%',
                     translateY: '-50%',
                 }}
-                transition={{
-                    type: 'spring',
-                    stiffness: 50,
-                    damping: 15,
-                }}
             >
                 <motion.div
-                    className="w-16 h-16 rounded-full border border-primary/30"
                     animate={{
-                        scale: isHovering ? 1.2 : 1,
-                        opacity: isHovering ? 0.6 : 0.3,
+                        scale: isHovering ? 1.8 : 1.2,
+                        opacity: isHovering ? 0.8 : 0.4,
                     }}
                     transition={{
                         duration: 0.3,
                     }}
+                    className="w-12 h-12 border border-primary/50 rounded-full"
+                    style={{
+                        boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
+                        animation: 'glitch 3s ease-in-out infinite',
+                    }}
                 />
             </motion.div>
+
+            {/* Scanline effect */}
+            <motion.div
+                className="fixed top-0 left-0 pointer-events-none z-[9996]"
+                style={{
+                    x: cursorX,
+                    y: cursorY,
+                    translateX: '-50%',
+                    translateY: '-50%',
+                }}
+            >
+                <motion.div
+                    animate={{
+                        scaleY: [1, 1.5, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
+                    className="w-16 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
+                    style={{
+                        boxShadow: '0 0 10px rgba(0, 217, 255, 0.6)',
+                    }}
+                />
+            </motion.div>
+
+            <style jsx>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.6;
+          }
+        }
+
+        @keyframes glitch {
+          0%, 100% {
+            transform: translate(0, 0);
+          }
+          20% {
+            transform: translate(-2px, 2px);
+          }
+          40% {
+            transform: translate(2px, -2px);
+          }
+          60% {
+            transform: translate(-2px, -2px);
+          }
+          80% {
+            transform: translate(2px, 2px);
+          }
+        }
+      `}</style>
         </>
     );
 };

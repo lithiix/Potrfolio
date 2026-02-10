@@ -22,16 +22,31 @@ const Navbar = () => {
         >
             <div className="max-w-7xl mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
-                    {/* Logo */}
-                    <motion.div
+                    {/* Logo with Icon */}
+                    <motion.a
+                        href="#home"
                         whileHover={{ scale: 1.05 }}
-                        className="text-2xl font-bold"
+                        className="flex items-center space-x-3 group"
                     >
-                        <span className="gradient-text">LITHIRA</span>
-                    </motion.div>
+                        {/* Logo Icon */}
+                        <div className="relative">
+                            <img
+                                src="/logo.svg"
+                                alt="Logo"
+                                className="w-10 h-10 transition-transform duration-300 group-hover:rotate-180"
+                            />
+                            <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+
+                        {/* Brand Name */}
+                        <div className="flex flex-col">
+                            <span className="text-xl font-bold gradient-text">LITHIRA RANSIKA</span>
+                            <span className="text-xs text-gray-400 font-mono">Full Stack Dev</span>
+                        </div>
+                    </motion.a>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
+                    <div className="hidden md:flex items-center space-x-1">
                         {navItems.map((item, index) => (
                             <motion.a
                                 key={item.name}
@@ -39,29 +54,36 @@ const Navbar = () => {
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="text-gray-300 hover:text-primary transition-colors duration-300 relative group"
+                                className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 group"
                             >
                                 {item.name}
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+
+                                {/* Hover glow effect */}
+                                <span className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300"></span>
                             </motion.a>
                         ))}
+
+                        {/* CTA Button */}
                         <motion.a
                             href="#contact"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="btn-primary"
+                            className="ml-4 px-6 py-2 bg-gradient-to-r from-primary to-accent-cyan text-dark font-semibold rounded-lg relative overflow-hidden group"
                         >
-                            Let's Talk
+                            <span className="relative z-10">Let's Talk</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-accent-cyan to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </motion.a>
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <button
+                    <motion.button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="md:hidden text-white p-2"
+                        whileTap={{ scale: 0.9 }}
+                        className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
                     >
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
+                    </motion.button>
                 </div>
 
                 {/* Mobile Navigation */}
@@ -70,25 +92,31 @@ const Navbar = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden mt-4 space-y-4"
+                        className="md:hidden mt-4 space-y-2 pb-4"
                     >
-                        {navItems.map((item) => (
-                            <a
+                        {navItems.map((item, index) => (
+                            <motion.a
                                 key={item.name}
                                 href={item.href}
                                 onClick={() => setIsOpen(false)}
-                                className="block text-gray-300 hover:text-primary transition-colors duration-300 py-2"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="block text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300 py-3 px-4 rounded-lg border border-transparent hover:border-primary/30"
                             >
                                 {item.name}
-                            </a>
+                            </motion.a>
                         ))}
-                        <a
+                        <motion.a
                             href="#contact"
                             onClick={() => setIsOpen(false)}
-                            className="block btn-primary text-center"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: navItems.length * 0.05 }}
+                            className="block btn-primary text-center mt-4"
                         >
                             Let's Talk
-                        </a>
+                        </motion.a>
                     </motion.div>
                 )}
             </div>
